@@ -36,28 +36,28 @@ namespace Console_Application
                 {
                     case 1:
                         DataManage.FetchData();
-                        DataManage.DisplayData(DataManage.GetChoice());
+                        DataManage.DisplayData();
 
                         Console.WriteLine();
                         break;
 
                     case 2:
                         DataManage.AddData();
-                        DataManage.DisplayData(DataManage.GetChoice());
+                        DataManage.DisplayData();
 
                         Console.WriteLine();
                         break;
 
                     case 3:
                         DataManage.UpdateData();
-                        DataManage.DisplayData(DataManage.GetChoice());
+                        DataManage.DisplayData();
 
                         Console.WriteLine();
                         break;
 
                     case 4:
                         DataManage.DeleteData();
-                        DataManage.DisplayData(DataManage.GetChoice());
+                        DataManage.DisplayData();
 
                         Console.WriteLine();
                         break;

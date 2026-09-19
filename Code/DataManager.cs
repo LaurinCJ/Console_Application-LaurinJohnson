@@ -17,9 +17,9 @@ namespace Console_Application
             
         }
 
-        public void DisplayData(int table)
+        public void DisplayData()
         {
-            switch (table)
+            switch (GetChoice())
             {
                 case 1:
                     sql = "SELECT FranchiseID, Franchise FROM dbo.Franchises;";
@@ -93,7 +93,7 @@ namespace Console_Application
             }
         }
 
-        public void FetchData() //Case 1: Get Data
+        public int FetchData() //Case 1: Get Data
         {
             Console.WriteLine("Which table would you like to access? Enter the corresponding number.");
             Console.WriteLine("Options: \n" +
@@ -111,6 +111,8 @@ namespace Console_Application
 
                 inputCheck = int.TryParse(choiceInput, out choice);
             }
+
+            return choice;
         }
 
         public void AddData() //Case 2: Add Data
