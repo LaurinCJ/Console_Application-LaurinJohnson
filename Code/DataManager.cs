@@ -7,6 +7,8 @@ namespace Console_Application
 {
     public class DataManager
     {
+        String sql = "";
+        int choice = 0;
         private const string ConnectionString =
             "Server=(localdb)\\ProjectModels;Database=Video_Games;Trusted_Connection=True;TrustServerCertificate=True;";
         
@@ -15,27 +17,9 @@ namespace Console_Application
             
         }
 
-        public void FetchData() //Case 1: Get Data
+        public void DisplayData(int table)
         {
-            String sql = "";
-            Console.WriteLine("Which table would you like to access? Enter the corresponding number.");
-            Console.WriteLine("Options: \n" +
-                              "1. Franchises \n" +
-                              "2. Titles \n");
-
-            String choiceInput = Console.ReadLine();
-
-            bool inputCheck = int.TryParse(choiceInput, out int choice);
-
-            while (inputCheck == false || (choice != 1 && choice != 2))
-            {
-                Console.WriteLine("\nPlease input a valid number.");
-                choiceInput = Console.ReadLine();
-
-                inputCheck = int.TryParse(choiceInput, out choice);
-            }
-
-            switch (choice)
+            switch (table)
             {
                 case 1:
                     sql = "SELECT FranchiseID, Franchise FROM dbo.Franchises;";
@@ -107,31 +91,31 @@ namespace Console_Application
 
                     break;
             }
+        }
 
-            
+        public void FetchData() //Case 1: Get Data
+        {
+            Console.WriteLine("Which table would you like to access? Enter the corresponding number.");
+            Console.WriteLine("Options: \n" +
+                              "1. Franchises \n" +
+                              "2. Titles \n");
+
+            String choiceInput = Console.ReadLine();
+
+            bool inputCheck = int.TryParse(choiceInput, out choice);
+
+            while (inputCheck == false || (choice != 1 && choice != 2))
+            {
+                Console.WriteLine("\nPlease input a valid number.");
+                choiceInput = Console.ReadLine();
+
+                inputCheck = int.TryParse(choiceInput, out choice);
+            }
         }
 
         public void AddData() //Case 2: Add Data
         {
-            Console.WriteLine("Add Data successfully called");
-
-            try
-            {
-                using (SqlConnection connection = new SqlConnection(ConnectionString))
-                {
-                    connection.Open();
-                    Console.WriteLine("Successfully connected.");
-
-
-                }
-                Console.WriteLine("\nClosed Connection.");
-            }
-
-            catch (SqlException)
-            {
-                Console.WriteLine("Connection Failed. Returning to options.");
-                return;
-            }
+            FetchData();
         }
 
         public void UpdateData() //Case 3: Update Data
@@ -178,6 +162,11 @@ namespace Console_Application
                 Console.WriteLine("Connection Failed. Returning to options.");
                 return;
             }
+        }
+
+        public int GetChoice()
+        {
+            return choice;
         }
     }
 }
