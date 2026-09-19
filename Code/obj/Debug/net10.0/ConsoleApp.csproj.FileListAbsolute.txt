@@ -1,0 +1,16 @@
+D:\Homework to be Organized\CSCE 547\Console_Application\Code\bin\Debug\net10.0\ConsoleApp.exe
+D:\Homework to be Organized\CSCE 547\Console_Application\Code\bin\Debug\net10.0\ConsoleApp.deps.json
+D:\Homework to be Organized\CSCE 547\Console_Application\Code\bin\Debug\net10.0\ConsoleApp.runtimeconfig.json
+D:\Homework to be Organized\CSCE 547\Console_Application\Code\bin\Debug\net10.0\ConsoleApp.dll
+D:\Homework to be Organized\CSCE 547\Console_Application\Code\bin\Debug\net10.0\ConsoleApp.pdb
+D:\Homework to be Organized\CSCE 547\Console_Application\Code\obj\Debug\net10.0\ConsoleApp.GeneratedMSBuildEditorConfig.editorconfig
+D:\Homework to be Organized\CSCE 547\Console_Application\Code\obj\Debug\net10.0\ConsoleApp.AssemblyInfoInputs.cache
+D:\Homework to be Organized\CSCE 547\Console_Application\Code\obj\Debug\net10.0\ConsoleApp.AssemblyInfo.cs
+D:\Homework to be Organized\CSCE 547\Console_Application\Code\obj\Debug\net10.0\ConsoleApp.csproj.CoreCompileInputs.cache
+D:\Homework to be Organized\CSCE 547\Console_Application\Code\obj\Debug\net10.0\ConsoleApp.sourcelink.json
+D:\Homework to be Organized\CSCE 547\Console_Application\Code\obj\Debug\net10.0\ConsoleApp.dll
+D:\Homework to be Organized\CSCE 547\Console_Application\Code\obj\Debug\net10.0\refint\ConsoleApp.dll
+D:\Homework to be Organized\CSCE 547\Console_Application\Code\obj\Debug\net10.0\ConsoleApp.pdb
+D:\Homework to be Organized\CSCE 547\Console_Application\Code\obj\Debug\net10.0\ConsoleApp.genruntimeconfig.cache
+D:\Homework to be Organized\CSCE 547\Console_Application\Code\obj\Debug\net10.0\ref\ConsoleApp.dll
+D:\Homework to be Organized\CSCE 547\Console_Application\Code\obj\Debug\net10.0\ConsoleApp.csproj.Up2Date
