@@ -7,9 +7,10 @@ namespace Console_Application
 {
     public class DataManager
     {
-        String sql = "";
-        int choice = 0;
-        private const string ConnectionString =
+        String sql = ""; //Declaring connection string
+        int choice = 0; //Default choice value, guarantees the user must be prompted for choice of table to access
+
+        private const string ConnectionString = //Constant connection string, hopefully to minimize errors
             "Server=(localdb)\\ProjectModels;Database=Video_Games;Trusted_Connection=True;TrustServerCertificate=True;";
         
         public DataManager()
@@ -17,9 +18,9 @@ namespace Console_Application
             
         }
 
-        public void DisplayData()
+        public void DisplayData() //This handles the actual displaying of data pulled from a table
         {
-            switch (GetChoice())
+            switch (choice)
             {
                 case 1:
                     sql = "SELECT FranchiseID, Franchise FROM dbo.Franchises;";
@@ -93,8 +94,8 @@ namespace Console_Application
             }
         }
 
-        public int FetchData() //Case 1: Get Data
-        {
+        public void FetchData() //Case 1: Get Data
+        {                       //This method is to correctly select a specific table and change the value of choice
             Console.WriteLine("Which table would you like to access? Enter the corresponding number.");
             Console.WriteLine("Options: \n" +
                               "1. Franchises \n" +
@@ -111,8 +112,6 @@ namespace Console_Application
 
                 inputCheck = int.TryParse(choiceInput, out choice);
             }
-
-            return choice;
         }
 
         public void AddData() //Case 2: Add Data
