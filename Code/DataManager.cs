@@ -7,20 +7,15 @@ namespace Console_Application
 {
     public class DataManager
     {
-        String sql = ""; //Declaring connection string
-        int choice = 0; //Default choice value, guarantees the user must be prompted for choice of table to access
+        private String sql = ""; //Declaring connection string
+        private int choice = 0; //Default choice value, guarantees the user must be prompted for choice of table to access
 
         private const string ConnectionString = //Constant connection string, hopefully to minimize errors
             "Server=(localdb)\\ProjectModels;Database=Video_Games;Trusted_Connection=True;TrustServerCertificate=True;";
-        
-        public DataManager()
-        {
-            
-        }
 
-        public void DisplayData() //This handles the actual displaying of data pulled from a table
+        public void DisplayData(int tempChoice) //This handles the actual displaying of data pulled from a table
         {
-            switch (choice)
+            switch (tempChoice)
             {
                 case 1:
                     sql = "SELECT FranchiseID, Franchise FROM dbo.Franchises;";
@@ -33,8 +28,6 @@ namespace Console_Application
 
                             SqlCommand command = new SqlCommand(sql, connection);
 
-                            Console.WriteLine("Successfully connected.");
-
                             SqlDataReader reader = command.ExecuteReader();
 
                             while (reader.Read())
@@ -45,7 +38,6 @@ namespace Console_Application
                                 Console.WriteLine($"{franchiseId}: {franchise}");
                             }
                         }
-                        Console.WriteLine("\nClosed Connection.");
                     }
 
                     catch (SqlException)
@@ -67,8 +59,6 @@ namespace Console_Application
 
                             SqlCommand command = new SqlCommand(sql, connection);
 
-                            Console.WriteLine("Successfully connected.");
-
                             SqlDataReader reader = command.ExecuteReader();
 
                             while (reader.Read())
@@ -81,7 +71,40 @@ namespace Console_Application
                                 Console.WriteLine($"{gameID}: {gameTitle} - {console} - Franchise: {franchise}");
                             }
                         }
-                        Console.WriteLine("\nClosed Connection.");
+                    }
+
+                    catch (SqlException)
+                    {
+                        Console.WriteLine("Connection Failed. Returning to options.");
+                        return;
+                    }
+
+                    break;
+
+                case 998855: //Random number string to hopefully prevent this case from being randomly chosen
+                    sql = "SELECT DISTINCT Console FROM dbo.Titles ORDER BY Console;";
+
+                    try
+                    {
+                        using (SqlConnection connection = new SqlConnection(ConnectionString))
+                        {
+                            connection.Open();
+
+                            SqlCommand command = new SqlCommand(sql, connection);
+
+                            SqlDataReader reader = command.ExecuteReader();
+
+                            int i = 1;
+
+                            while (reader.Read())
+                            {
+                                var tableConsole = reader["Console"];
+
+                                Console.WriteLine(i + ". " + tableConsole);
+
+                                i++;
+                            }
+                        }
                     }
 
                     catch (SqlException)
@@ -94,8 +117,8 @@ namespace Console_Application
             }
         }
 
-        public void FetchData() //Case 1: Get Data
-        {                       //This method is to correctly select a specific table and change the value of choice
+        public void FetchData() //Case 1: Get Data, This method is to correctly select a specific table and change the value of choice
+        {                       
             Console.WriteLine("Which table would you like to access? Enter the corresponding number.");
             Console.WriteLine("Options: \n" +
                               "1. Franchises \n" +
@@ -117,57 +140,208 @@ namespace Console_Application
         public void AddData() //Case 2: Add Data
         {
             FetchData();
+
+            switch(choice)
+            {
+                case 1:
+                    Console.WriteLine("What Franchise would you like to add?");
+                    String franchise = Console.ReadLine();
+
+                    sql = "INSERT INTO dbo.Franchises (Franchise) VALUES (@franchise);";
+
+                    try
+                    {
+                        using (SqlConnection connection = new SqlConnection(ConnectionString))
+                        {
+                            connection.Open();
+
+                            SqlCommand command = new SqlCommand(sql, connection);
+
+                            command.Parameters.AddWithValue("@franchise", franchise);
+
+                            command.ExecuteNonQuery();
+                        }
+
+                        Console.WriteLine("Successfully Inserted.");
+
+                        DisplayData(choice);
+                    }
+
+                    catch (SqlException ex)
+                    {
+                        Console.WriteLine("Database error: " + ex.Message);
+                        return;
+                    }
+
+                    break;
+
+                case 2:
+                    Console.WriteLine("What is the title of the Game you would you like to add?"); //Game Title Input
+                    String gameName = Console.ReadLine();
+
+                    Console.WriteLine("What console did this game release on? Enter name present below or type 'New'. Be sure to check spelling."); //Console Input
+                    Console.WriteLine("Here are the currently stored consoles:\n");
+                    DisplayData(998855);
+
+                    string consoleInput = Console.ReadLine();
+
+                    if (consoleInput.Equals("NEW", StringComparison.OrdinalIgnoreCase))
+                    {
+                        Console.WriteLine("What new console would you like to add?");
+                        consoleInput = Console.ReadLine();
+
+                        // Check whether the "new" console already exists,
+                        // ignoring capitalization.
+                        if (TryGetMatchingConsole(consoleInput, out String matchedConsole))
+                        {
+                            // It already exists, so use its database capitalization.
+                            consoleInput = matchedConsole;
+                        }
+
+                        // If it does NOT already exist, consoleInput stays as the
+                        // new console name the user entered.
+                    }
+
+                    else if (TryGetMatchingConsole(consoleInput, out String matchedConsole))
+                    {
+                        // The user entered an existing console directly.
+                        // Replace their capitalization with the database version.
+                        consoleInput = matchedConsole;
+                    }
+
+                    else
+                    {
+                        Console.WriteLine("That console does not exist. Type NEW if you want to add one.");
+                        return;
+                    }
+
+                    Console.WriteLine("\nFinally, what franchise does this game belong to?");
+                    Console.WriteLine("Enter the number corresponding to a listed franchise:");
+
+                    DisplayData(1);
+                    Console.WriteLine();
+
+                    String franchiseInput = Console.ReadLine();
+
+                    bool validNumber = int.TryParse(franchiseInput, out int franchiseId);
+
+                    if (!validNumber || !FranchiseIdExists(franchiseId))
+                    {
+                        Console.WriteLine("That is not a valid Franchise ID.");
+                        Console.WriteLine("If this is a new franchise, add it in a separate insert first.");
+                        return;
+                    }
+
+                    sql = "INSERT INTO dbo.Titles (GameTitle, FranchiseID, [Console]) " + "VALUES (@gameName, @franchiseId, @consoleInput);";
+
+                    try
+                    {
+                        using (SqlConnection connection = new SqlConnection(ConnectionString))
+                        {
+                            connection.Open();
+
+                            SqlCommand command = new SqlCommand(sql, connection);
+
+                            command.Parameters.AddWithValue("@gameName", gameName);
+                            command.Parameters.AddWithValue("@franchiseId", franchiseId);
+                            command.Parameters.AddWithValue("@consoleInput", consoleInput);
+
+                            command.ExecuteNonQuery();
+                        }
+
+                        Console.WriteLine("\nSuccessfully Inserted\n");
+                        DisplayData(2);
+                    }
+
+                    catch (SqlException ex)
+                    {
+                        Console.WriteLine("Database error: " + ex.Message);
+                        return;
+                    }
+
+                    break;
+            }
         }
 
         public void UpdateData() //Case 3: Update Data
         {
-            Console.WriteLine("Update Data successfully called");
-
-            try
-            {
-                using (SqlConnection connection = new SqlConnection(ConnectionString))
-                {
-                    connection.Open();
-                    Console.WriteLine("Successfully connected.");
-
-
-                }
-                Console.WriteLine("\nClosed Connection.");
-            }
-
-            catch (SqlException)
-            {
-                Console.WriteLine("Connection Failed. Returning to options.");
-                return;
-            }
+            #warning TODO: Create UpdateData()
         }
         
         public void DeleteData() //Case 4: Delete Data
         {
-            Console.WriteLine("Delete Data successfully called");
-
-            try
-            {
-                using (SqlConnection connection = new SqlConnection(ConnectionString))
-                {
-                    connection.Open();
-                    Console.WriteLine("Successfully connected.");
-
-
-                }
-                Console.WriteLine("\nClosed Connection.");
-            }
-
-            catch (SqlException)
-            {
-                Console.WriteLine("Connection Failed. Returning to options.");
-                return;
-            }
+            #warning TODO: Create DeleteData()
         }
 
         public int GetChoice()
         {
             return choice;
+        }
+
+        private bool TryGetMatchingConsole(string userInput, out string console)
+        {
+            console = "";
+
+            sql = "SELECT DISTINCT Console FROM dbo.Titles ORDER BY Console;";
+
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(ConnectionString))
+                {
+                    connection.Open();
+
+                    SqlCommand command = new SqlCommand(sql, connection);
+
+                    SqlDataReader reader = command.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        var tableConsole = reader["Console"].ToString();
+
+                        if (string.Equals(userInput, tableConsole,
+                            StringComparison.OrdinalIgnoreCase))
+                        {
+                            // This saves the correctly capitalized database value.
+                            console = tableConsole;
+                        }
+                    }
+                }
+
+                return console != "";
+            }
+
+            catch (SqlException)
+            {
+                Console.WriteLine("Connection Failed. Returning to options.");
+                return false;
+            }
+        }
+
+        private bool FranchiseIdExists(int franchiseId)
+        {
+            sql = "SELECT COUNT(*) FROM dbo.Franchises WHERE FranchiseID = @franchiseId;";
+
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(ConnectionString))
+                {
+                    connection.Open();
+
+                    SqlCommand command = new SqlCommand(sql, connection);
+
+                    command.Parameters.AddWithValue("@franchiseId", franchiseId);
+
+                    int numberOfMatches = (int)command.ExecuteScalar();
+
+                    return numberOfMatches > 0;
+                }
+            }
+
+            catch (SqlException)
+            {
+                Console.WriteLine("Connection Failed. Returning to options.");
+                return false;
+            }
         }
     }
 }
